@@ -1,26 +1,22 @@
 import java.util.Scanner;
 
-public class atm {
+public class ATM {
     // User details:
-    static int pin = 4567;
-    static int amount = 5000;
-    static int cancel;
-    static int pinAttempts = 0;
+    private static int pin = 4567;
+    private static int balance = 5000;
+    private static int pinAttempts = 0;
 
-    static String customername = "John Doe";
-    static String accountNumber = "XXXXXXXXXX1234";
-    static String choice1="yes";
-    static String choice2="no";
+    private static final String customerName = "John Doe";
+    private static final String accountNumber = "XXXXXXXXXX1234";
 
-    public static int withdraw(int user_amount) {
-        amount -= user_amount;
-        return amount;
-
+    public static int withdraw(int amount) {
+        balance -= amount;
+        return balance;
     }
 
-    public static int deposit(int user_dep) {
-        amount += user_dep;
-        return amount;
+    public static int deposit(int amount) {
+        balance += amount;
+        return balance;
     }
 
     public static void clearScreen() {
@@ -29,83 +25,94 @@ public class atm {
         }
     }
 
+    public static void printReceipt(String transactionType, int amount) {
+        System.out.println("\n----------------ATM TRANSACTION----------------");
+        System.out.printf("| CARD NUMBER    : %s%n", accountNumber);
+        System.out.printf("| CUSTOMER NAME  : %s%n", customerName);
+        System.out.printf("| TRANSACTION    : %s%n", transactionType);
+        System.out.printf("| AMOUNT         : %d%n", amount);
+        System.out.printf("| AVAILABLE BAL  : %d%n", balance);
+        System.out.println("----------------------------------------------");
+    }
+
     public static void main(String[] args) {
-        Scanner dinesh = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("------Welcome To IOB------");
-            System.out.print("Click 1 to insert card:|");
-            int n = dinesh.nextInt();
+            System.out.println("\n------ Welcome To IOB ------");
+            System.out.println("1. Insert card");
+            System.out.println("2. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
 
-            if (n == 1) {
+            if (choice == 2) {
+                System.out.println("Thank you for using IOB ATM. Have a nice day!");
+                break;
+            }
+
+            if (choice == 1) {
                 System.out.print("Enter PIN: ");
-                int pinnum = dinesh.nextInt();
-                if (pinnum == pin) {
-                    System.out.println("--------Select your transactions----------");
-                    System.out.println("1. Withdraw cash");
-                    System.out.println("2. Deposit cash");
+                int enteredPin = scanner.nextInt();
+
+                if (enteredPin == pin) {
+                    System.out.println("\n-------- Select Your Transaction --------");
+                    System.out.println("1. Withdraw Cash");
+                    System.out.println("2. Deposit Cash");
                     System.out.println("3. Balance Enquiry");
                     System.out.println("4. Change PIN");
-                    int transactions = dinesh.nextInt();
+                    System.out.println("5. Exit");
+                    System.out.print("Enter your choice: ");
+                    int transaction = scanner.nextInt();
 
-                    switch (transactions) {
+                    switch (transaction) {
                         case 1:
-                            System.out.print("Enter amount: ");
-                            int user_amount = dinesh.nextInt();
-                            if (user_amount <= amount) {
-                                System.out.println("Your transaction is being processed...");
-                                System.out.println("Collect your cash");
-                                dinesh.nextLine(); // Clear buffer after reading int
+                            System.out.print("Enter withdrawal amount: ");
+                            int withdrawAmount = scanner.nextInt();
+                            if (withdrawAmount <= balance) {
+                                System.out.println("Processing your transaction...");
+                                System.out.println("Please collect your cash.");
+                                withdraw(withdrawAmount);
+
                                 System.out.print("Do you want a receipt? (yes/no): ");
-                                String receipt = dinesh.nextLine();
-                                if(receipt.equals(choice1)) {
-                                    withdraw(user_amount);
-                                    System.out.println("----------------ATM TRANSACTION-------");
-                                    System.out.println(". CARD NUMBER    XXXXXXXXXX          .");
-                                    System.out.println(". CUSTOMER NAME  ##########          .");
-                                    System.out.println(". TRANSACTION    Deposit             .");
-                                    System.out.printf(". AVAIL BALANCE  %d                .\n", amount);
-                                    System.out.println("------------------------------------");
+                                scanner.nextLine(); // Clear buffer
+                                String receipt = scanner.nextLine();
+                                if (receipt.equalsIgnoreCase("yes")) {
+                                    printReceipt("Withdrawal", withdrawAmount);
                                 }
                             } else {
-                                System.out.println("insufficient balance!");
+                                System.out.println("Insufficient balance!");
                             }
                             break;
 
-
                         case 2:
                             System.out.print("Enter deposit amount: ");
-                            int user_dep = dinesh.nextInt();
+                            int depositAmount = scanner.nextInt();
+                            deposit(depositAmount);
                             System.out.println("Cash deposited successfully.");
-                            deposit(user_dep);
-                            System.out.println("----------------ATM TRANSACTION-------");
-                            System.out.println(". CARD NUMBER    XXXXXXXXXX          .");
-                            System.out.println(". CUSTOMER NAME  ##########          .");
-                            System.out.println(". TRANSACTION    Deposit             .");
-                            System.out.printf(". AVAIL BALANCE  %d                .\n", amount);
-                            System.out.println("------------------------------------");
+
+                            System.out.print("Do you want a receipt? (yes/no): ");
+                            scanner.nextLine(); // Clear buffer
+                            String depositReceipt = scanner.nextLine();
+                            if (depositReceipt.equalsIgnoreCase("yes")) {
+                                printReceipt("Deposit", depositAmount);
+                            }
                             break;
 
                         case 3:
-                            System.out.println("----------------ATM TRANSACTION-------");
-                            System.out.println(". CARD NUMBER    XXXXXXXXXX          .");
-                            System.out.println(". CUSTOMER NAME  ##########          .");
-                            System.out.println(". TRANSACTION    Balance Enquiry     .");
-                            System.out.printf(". AVAIL BALANCE  %d                .\n", amount);
-                            System.out.println("------------------------------------");
+                            printReceipt("Balance Enquiry", 0);
                             break;
 
                         case 4:
-                            System.out.println("Enter old PIN:");
-                            int old_pin = dinesh.nextInt();
-                            if (old_pin == pin) {
-                                System.out.println("Enter new PIN:");
-                                int new_pin1 = dinesh.nextInt();
-                                System.out.println("Confirm new PIN:");
-                                int new_pin2 = dinesh.nextInt();
-                                if (new_pin1 == new_pin2) {
-                                    pin = new_pin2;
-                                    System.out.println("Your PIN has been changed!");
+                            System.out.print("Enter old PIN: ");
+                            int oldPin = scanner.nextInt();
+                            if (oldPin == pin) {
+                                System.out.print("Enter new PIN: ");
+                                int newPin1 = scanner.nextInt();
+                                System.out.print("Confirm new PIN: ");
+                                int newPin2 = scanner.nextInt();
+                                if (newPin1 == newPin2) {
+                                    pin = newPin2;
+                                    System.out.println("Your PIN has been changed successfully!");
                                 } else {
                                     System.out.println("PIN mismatch. Try again.");
                                 }
@@ -114,26 +121,32 @@ public class atm {
                             }
                             break;
 
+                        case 5:
+                            System.out.println("Thank you for using IOB ATM.");
+                            return;
+
                         default:
                             System.out.println("Invalid transaction choice.");
-                            break;
                     }
                 } else {
                     pinAttempts++;
                     System.out.println("Invalid PIN! Please try again.");
+
                     if (pinAttempts >= 3) {
-                        System.out.println("Account locked! due to multiple incorrect PIN attempts. Please contact your bank.");
+                        System.out.println("Account locked due to multiple incorrect PIN attempts. Please contact your bank.");
                         break;
                     }
 
-
-                    System.out.println("Click 1 to cancel and return to the main menu.");
-                    cancel = dinesh.nextInt();
+                    System.out.println("Press 1 to cancel and return to the main menu.");
+                    int cancel = scanner.nextInt();
                     if (cancel == 1) {
                         clearScreen();
                     }
                 }
             }
         }
+
+        scanner.close();
     }
 }
+
